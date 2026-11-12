@@ -1,0 +1,64 @@
+name: Update Rayfish
+
+on:
+  schedule:
+    - cron: '23 11 * * 1' # Mondays, 11:23 UTC
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-rayfish
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - name: Refresh release and dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/update.py
+      - name: Evaluate all platforms and build Linux CLI
+        run: |
+          nix flake check --all-systems --no-build
+          nix build .#cli
+          ./result/bin/ray --version
+          ./result/bin/ray --help
+      - uses: peter-evans/create-pull-request@v7
+        id: pr
+        with:
+          branch: auto-update-rayfish
+          delete-branch: true
+          commit-message: 'chore: update Rayfish and Nix dependencies'
+          title: 'chore: update Rayfish and Nix dependencies'
+          body: |
+            Updates the latest stable Rayfish release, signed macOS DMG hashes,
+            Cargo vendor hash, and flake inputs. Linux build and CLI smoke checks
+            passed; all platform outputs were evaluated. macOS runtime behavior
+            still requires testing on a Mac.
+          add-paths: |
+            flake.nix
+            flake.lock
+      # GITHUB_TOKEN-created PRs do not emit pull_request workflow runs,
+      # but explicit workflow_dispatch events are supported.
+      - name: Dispatch PR checks
+        if: steps.pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh workflow run check.yml --ref auto-update-rayfish
+      - name: Enable auto-merge after required checks
+        if: steps.pr.outputs.pull-request-number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.pr.outputs.pull-request-number }}
+          HEAD_SHA: ${{ steps.pr.outputs.pull-request-head-sha }}
+        run: gh pr merge "$PR_NUMBER" --auto --squash --match-head-commit "$HEAD_SHA"
