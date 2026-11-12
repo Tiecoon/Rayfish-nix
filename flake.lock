@@ -1,0 +1,45 @@
+{
+  "nodes": {
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1793977579,
+        "narHash": "sha256-WrSODdZFVIs/Hh2NzC0bY+ROByi0bATg8WfePX8dPj8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "4fe25e12eb9f4c744966dd3de5a05246cf098601",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "rayfish": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793875189,
+        "narHash": "sha256-GkL2DwSJpKcG58L56rmR75iMij0X6OHGjuHDs+4g66U=",
+        "owner": "rayfish",
+        "repo": "rayfish",
+        "rev": "c29c4a17d9ba76ef30dd9e307f3ba0cb1e4efaba",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rayfish",
+        "ref": "v0.5.16",
+        "repo": "rayfish",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs": "nixpkgs",
+        "rayfish": "rayfish"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
