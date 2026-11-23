@@ -2,11 +2,11 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1793977579,
-        "narHash": "sha256-WrSODdZFVIs/Hh2NzC0bY+ROByi0bATg8WfePX8dPj8=",
+        "lastModified": 1795371335,
+        "narHash": "sha256-oa2P5WZer1A4wuhatl92JyHHEjrrOdIyuvTuI5LUi9Q=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "4fe25e12eb9f4c744966dd3de5a05246cf098601",
+        "rev": "619c39f6eac5d1ed6b8f073a9414baf7034b2356",
         "type": "github"
       },
       "original": {
@@ -19,16 +19,16 @@
     "rayfish": {
       "flake": false,
       "locked": {
-        "lastModified": 1793875189,
-        "narHash": "sha256-GkL2DwSJpKcG58L56rmR75iMij0X6OHGjuHDs+4g66U=",
+        "lastModified": 1795068264,
+        "narHash": "sha256-s6CnqdfKN70oI7auj4V2pFQCnqm2cW/FpRjvifyrJyM=",
         "owner": "rayfish",
         "repo": "rayfish",
-        "rev": "c29c4a17d9ba76ef30dd9e307f3ba0cb1e4efaba",
+        "rev": "32a59f4f60b4307fd2430d657672703d9245472e",
         "type": "github"
       },
       "original": {
         "owner": "rayfish",
-        "ref": "v0.5.16",
+        "ref": "v0.5.17",
         "repo": "rayfish",
         "type": "github"
       }
