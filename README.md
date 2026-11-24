@@ -26,6 +26,48 @@ profiles that cannot be supplied by a generic Nix flake.
 platform. On macOS, choose either the app or the standalone daemon, not both.
 This flake packages software only; it does not configure a system service.
 
+## iPhone development build (Apple Silicon Mac)
+
+This uses local Xcode, **not** a sandboxed Nix IPA build. You need full Xcode
+selected with `xcode-select`, iOS platform support, a paid Apple Developer
+membership, and a paired iPhone with Developer Mode enabled. The app supports
+iOS 17+; its Control Center extension requires iOS 18+.
+
+Prepare a new directory outside this repository with your own unique bundle ID:
+
+```sh
+IOS_BUNDLE_ID=com.example.rayfish nix run .#ios-build -- prepare ../rayfish-ios
+nix run .#ios-build -- open ../rayfish-ios
+```
+
+`prepare` copies the pinned source, updates the bundle and App Group identifiers,
+and generates the Xcode project. It refuses to overwrite an existing directory.
+`open` installs the pinned Rust toolchain and iOS targets, then opens Xcode.
+The generated Rust build phase retains the Nix tool paths; rerun `nix run` after
+Nix garbage collection. Prepare a new directory when the upstream revision changes.
+
+In Xcode, add your Apple account and choose your paid developer team for
+**Rayfish**, **RayfishTunnel**, and **RayfishControls**. Ensure the provisioning
+profiles include the upstream Network Extensions (Packet Tunnel) and App Groups
+capabilities, with the shared group `group.<your-bundle-id>`. Select your iPhone
+and use **Run** to build, install, and launch; approve adding the VPN configuration
+on the phone. This is development signing, not an App Store/TestFlight upload.
+
+Alternatively, after configuring signing, build without opening Xcode:
+
+```sh
+xcrun devicectl list devices
+IOS_TEAM_ID=YOURTEAMID IOS_DEVICE=YOUR_IPHONE_UDID \
+  nix run .#ios-build -- build ../rayfish-ios
+```
+
+This builds but does not install. The app is at
+`../rayfish-ios/target/ios-device/Build/Products/Debug-iphoneos/Rayfish.app`.
+Use Xcode to install it, or `xcrun devicectl device install app --device UDID APP_PATH`.
+Xcode, signing, and Rust/Cargo/Swift downloads run outside Nix's sandbox.
+
+## Automated updates
+
 GitHub Actions checks for stable releases and refreshes nixpkgs every Monday
 at 11:23 UTC (also runnable manually). It builds and smoke-tests the Linux CLI
 before opening an update PR, then enables squash auto-merge. Every PR also runs

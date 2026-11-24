@@ -12,7 +12,23 @@
   outputs = { nixpkgs, rayfish, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
+      iosPkgs = import nixpkgs { system = "aarch64-darwin"; };
+      iosBuild = iosPkgs.writeShellApplication {
+        name = "rayfish-ios-build";
+        runtimeInputs = with iosPkgs; [ rustup xcodegen python3 coreutils ];
+        text = ''
+          export RAYFISH_SOURCE=${rayfish}
+          export RAYFISH_REV=${rayfish.rev}
+          export RUSTUP_TOOLCHAIN=${iosPkgs.rustc.version}
+          ${builtins.readFile ./scripts/ios-build.sh}
+        '';
+      };
     in {
+      apps.aarch64-darwin.ios-build = {
+        type = "app";
+        program = "${iosBuild}/bin/rayfish-ios-build";
+        meta.description = "Prepare and build Rayfish for iPhone using local Xcode";
+      };
       packages = nixpkgs.lib.genAttrs systems (system:
         let
           pkgs = import nixpkgs { inherit system; };
