@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: write
   contents: write
   pull-requests: write
 
@@ -20,6 +19,8 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RAYFISH_UPDATE_TOKEN }}
       - uses: cachix/install-nix-action@v31
       - name: Refresh release and dependencies
         env:
@@ -34,6 +35,7 @@ jobs:
       - uses: peter-evans/create-pull-request@v7
         id: pr
         with:
+          token: ${{ secrets.RAYFISH_UPDATE_TOKEN }}
           branch: auto-update-rayfish
           delete-branch: true
           commit-message: 'chore: update Rayfish and Nix dependencies'
@@ -46,14 +48,6 @@ jobs:
           add-paths: |
             flake.nix
             flake.lock
-      # GITHUB_TOKEN-created PRs do not emit pull_request workflow runs,
-      # but explicit workflow_dispatch events are supported.
-      - name: Dispatch PR checks
-        if: steps.pr.outputs.pull-request-number != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: gh workflow run check.yml --ref auto-update-rayfish
       - name: Enable auto-merge after required checks
         if: steps.pr.outputs.pull-request-number != ''
         env:
