@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     rayfish = {
-      url = "github:rayfish/rayfish/v0.5.16";
+      url = "github:rayfish/rayfish/v0.5.17";
       flake = false;
     };
   };
@@ -16,12 +16,12 @@
       packages = nixpkgs.lib.genAttrs systems (system:
         let
           pkgs = import nixpkgs { inherit system; };
-          version = "0.5.16";
+          version = "0.5.17";
           cli = pkgs.rustPlatform.buildRustPackage {
             pname = "rayfish";
             inherit version;
             src = rayfish;
-            cargoHash = "sha256-5RKEXjlqObWmAO5OfOxEB4UC6+1OCWKR+GeMdMjYf8s=";
+            cargoHash = "sha256-Q7nAogmwIcN9CAYTGoXk0gQyxoX1iL4jre7ZNCPI5iA=";
             cargoBuildFlags = [ "--package" "rayfish" "--bin" "ray" ];
             cargoTestFlags = [ "--package" "rayfish" "--bin" "ray" ];
             env.RUSTFLAGS = "-C target-cpu=native";
@@ -43,7 +43,7 @@
             inherit version;
             src = pkgs.fetchurl {
               url = "https://github.com/rayfish/rayfish/releases/download/v${version}/Rayfish-${version}-arm64.dmg";
-              hash = "sha256:17fdf0681e3f61c488755696722d65d2179055f812581eaa525603be4ed82523";
+              hash = "sha256:0dccd532dd9e422fbe21a463247108be78a090b960db472a75b1c0e1280cd37d";
             };
             nativeBuildInputs = [ pkgs.undmg ];
             sourceRoot = ".";
